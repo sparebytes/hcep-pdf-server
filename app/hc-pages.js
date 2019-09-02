@@ -1,4 +1,4 @@
-const debug = require('debug')('hcepPdfServer:hcPage')
+const debug = require('debug')('hcepPdfServer:hcPages')
 const generateLaunchOptions = () => {
   const options = {
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu']

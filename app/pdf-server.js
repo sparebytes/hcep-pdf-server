@@ -1,4 +1,3 @@
-//const { hcPage } = require('./hc-page')
 const { hcPages } = require('./hc-pages')
 const { expressApp } = require('./express-app')
 const LAUNCH_HC_PAGES_NUM = Number(process.env.LAUNCH_HC_PAGES_NUM) || 30
