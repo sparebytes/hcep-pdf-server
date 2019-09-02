@@ -1,14 +1,14 @@
 const debug = require('debug')('hcepPdfServer:hcPages')
+const { appConfig } = require('./app-config')
 const generateLaunchOptions = () => {
   const options = {
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu']
+    args: ['--no-sandbox', '--disable-gpu']
   }
-  if (process.env.HCEP_USE_CHROMIUM === 'true') {
+  if (appConfig.useChromium) {
     debug('use Chromium')
   } else {
-    const chromeBinary = process.env.HCEP_CHROME_BINARY || '/usr/bin/google-chrome'
-    options['executablePath'] = chromeBinary
-    debug('use chromeBinary:', chromeBinary)
+    options['executablePath'] = appConfig.chromeBinary
+    debug('use chromeBinary:', appConfig.chromeBinary)
   }
   return options
 }
@@ -24,9 +24,17 @@ module.exports.hcPages = async (pagesNum) => {
   const chromeVersion = await browser.version()
   debug('chromeVersion:', chromeVersion)
   const pages = []
+  browser.on('error', msg => {
+    console.log("BROWSER ERROR", msg)
+    throw msg
+  })
   for(let i=0; i < pagesNum; i++){
     debug('page launched No.' + i)
-    pages.push(await browser.newPage())
+    const page = await browser.newPage()
+    page.on('error', msg => {
+      throw msg
+    })
+    pages.push(page)
   }
   return pages
 }

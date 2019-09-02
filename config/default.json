@@ -1,0 +1,14 @@
+{
+    "port": 8000,
+    "chromeBinary": "/usr/bin/google-chrome",
+    "useChromium": false,
+    "launchHcPagesNum": 8,
+    "appTimeoutMsec": 10000,
+    "pageTimeoutMsec": 10000,
+    "defaultMargin": "18mm",
+    "defaultPdfOptionKey": "A4",
+    "maxRequestSize": "10MB",
+    "myPdfOptionPresetsFilePath": null,
+    "testServerUrl": "http://localhost:8000",
+    "testTargetUrl": "https://www.google.com"
+}

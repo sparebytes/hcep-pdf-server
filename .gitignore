@@ -4,3 +4,7 @@ fonts/*
 !fonts/fonts.conf
 *.swp
 node_modules
+
+# Local Config
+/config/local.*
+/config/local-*

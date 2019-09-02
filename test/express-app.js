@@ -1,9 +1,10 @@
 const request = require('supertest')
 const { hcPages } = require('../app/hc-pages')
 const { expressApp } = require('../app/express-app')
-const SERVER_URL = process.env.HCEP_TEST_SERVER_URL || 'http://localhost:8000'
-const TAREGT_URL = process.env.HCEP_TEST_TAREGT_URL || 'https://www.google.com'
-const LAUNCH_HC_PAGES_NUM = Number(process.env.LAUNCH_HC_PAGES_NUM) || 5
+const { appConfig } = require('./app-config')
+const SERVER_URL = appConfig.testServerUrl
+const TAREGT_URL = appConfig.testTargetUrl
+const LAUNCH_HC_PAGES_NUM = appConfig.launchHcPagesNum
 const HTML_TEST_STRINGS = '<html>ok</html>'
 console.log('SERVER_URL:', SERVER_URL)
 console.log('TAREGT_URL:', TAREGT_URL)

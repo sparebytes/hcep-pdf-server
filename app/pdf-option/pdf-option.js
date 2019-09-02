@@ -1,5 +1,6 @@
 const mergeOptions = require('merge-options')
-const defaultMargin = process.env.HCEP_DEFAULT_MARGIN || '18mm'
+const { appConfig } = require('../app-config')
+const defaultMargin = appConfig.defaultMargin
 const defaultOption = {
   scale: 1,
   displayHeaderFooter: false,

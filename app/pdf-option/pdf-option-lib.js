@@ -1,8 +1,9 @@
 const debug = require('debug')('hcepPdfServer:getPdfOption')
-const defaultPdfOptionKey = process.env.HCEP_DEFAULT_PDF_OPTION_KEY || 'A4'
+const { appConfig } = require('../app-config')
+const defaultPdfOptionKey = appConfig.defaultPdfOptionKey
 const { defaultPdfOptionPresets } = require('./default-pdf-option-presets')
 const { PdfOption } = require('./pdf-option')
-const myPdfOptionPresetsFilePath = process.env.HCEP_MY_PDF_OPTION_PRESETS_FILE_PATH
+const myPdfOptionPresetsFilePath = appConfig.defaultPdfOptionPresets
 
 let pdfOptionPresets = defaultPdfOptionPresets
 const loadMyPdfOptionPresets = () => {

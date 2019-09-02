@@ -1,3 +1,5 @@
+const { appConfig } = require('./app-config')
+
 module.exports.expressApp = pages => {
   const pagesNum = pages.length
   console.log(`pages.length: ${pages.length}`)
@@ -16,11 +18,11 @@ module.exports.expressApp = pages => {
   const morgan = require('morgan')
   const timeout = require('connect-timeout')
   const { getPdfOption } = require('./pdf-option/pdf-option-lib')
-  const appTimeoutMsec = process.env.HCEP_APP_TIMEOUT_MSEC || 10000
-  const pageTimeoutMsec = process.env.HCEP_PAGE_TIMEOUT_MSEC || 10000
-  const listenPort = process.env.HCEP_PORT || 8000
+  const appTimeoutMsec = appConfig.appTimeoutMsec
+  const pageTimeoutMsec = appConfig.pageTimeoutMsec
+  const listenPort = appConfig.port
   /* bytes or string for https://www.npmjs.com/package/bytes */
-  const maxRquestSize = process.env.HCEP_MAX_REQUEST_SIZE || '10MB'
+  const maxRquestSize = appConfig.maxRequestSize
 
   const app = express()
   const env = app.get('env')

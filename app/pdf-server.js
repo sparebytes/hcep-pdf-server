@@ -1,6 +1,7 @@
 const { hcPages } = require('./hc-pages')
 const { expressApp } = require('./express-app')
-const LAUNCH_HC_PAGES_NUM = Number(process.env.LAUNCH_HC_PAGES_NUM) || 30
+const { appConfig } = require('./app-config')
+const LAUNCH_HC_PAGES_NUM = appConfig.launchHcPagesNum
 console.error('LAUNCH_HC_PAGES_NUM', LAUNCH_HC_PAGES_NUM)
 process.on('unhandledRejection', function(e){
   console.error('unhandledRejection. process.exit', e)
