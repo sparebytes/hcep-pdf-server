@@ -1,6 +1,7 @@
 {
   "name": "Node.js Sample",
   "dockerFile": "Dockerfile",
+  "context": "..",
 
   // Specifies a list of ports that should be published.
   "appPort": [8000],
