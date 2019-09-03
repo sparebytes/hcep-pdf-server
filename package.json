@@ -26,7 +26,9 @@
     "start": "node app/pdf-server.js",
     "test": "mocha",
     "lint": "eslint *",
-    "fix": "eslint --fix *"
+    "fix": "eslint --fix *",
+    "docker:build": "docker build -t sparebytesacr.azurecr.io/hcep-pdf-server:latest .",
+    "docker:push": "docker push sparebytesacr.azurecr.io/hcep-pdf-server:latest"
   },
   "repository": {
     "type": "git",
