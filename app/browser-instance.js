@@ -83,11 +83,17 @@ module.exports.getBrowserInstance = async () => {
     finally {
       if (context) {
         context.close()
+        readyNextPageContext()
       }
       else {
-        page.close()
+        if (appConfig.closePageAfterUse) {
+          page.close()
+          readyNextPageContext()
+        }
+        else {
+          pushNextPageContext(pageContext)
+        }
       }
-      readyNextPageContext()
     }
   }
 

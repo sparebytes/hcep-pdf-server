@@ -1,4 +1,6 @@
 {
+    "useIncognitoBrowserContext": true,
+    "closePageAfterUse": true,
     "pdfOptionPresets": {
         "A4ShowPageNumberFooter": {
             "format": "A4",

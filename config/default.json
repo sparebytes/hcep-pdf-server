@@ -3,6 +3,7 @@
     "chromeBinary": "/usr/bin/google-chrome",
     "useChromium": false,
     "useIncognitoBrowserContext": false,
+    "closePageAfterUse": false,
     "launchHcPagesNum": 8,
     "appTimeoutMsec": 10000,
     "pageTimeoutMsec": 10000,
