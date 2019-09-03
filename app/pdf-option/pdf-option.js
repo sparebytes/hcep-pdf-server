@@ -1,9 +1,8 @@
 const mergeOptions = require('merge-options')
 const { appConfig } = require('../app-config')
-const defaultMargin = appConfig.defaultMargin
 const defaultOption = {
   scale: 1,
-  displayHeaderFooter: false,
+  displayHeaderFooter: appConfig.defaultDisplayHeaderFooter,
   headerTemplate: '',
   footerTemplate: '',
   printBackground: true,
@@ -12,7 +11,7 @@ const defaultOption = {
   format: '',
   width: '',
   height: '',
-  margin: defaultMargin,
+  margin: appConfig.defaultMargin,
   marginTop: '',
   marginRight: '',
   marginBottom: '',

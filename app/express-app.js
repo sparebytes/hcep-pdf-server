@@ -1,5 +1,8 @@
 const { appConfig } = require('./app-config')
 
+const extractHeaderSelector = appConfig.defaultExtractHeaderSelector
+const extractFooterSelector = appConfig.defaultExtractFooterSelector
+
 module.exports.expressApp = pages => {
   const pagesNum = pages.length
   console.log(`pages.length: ${pages.length}`)
@@ -69,11 +72,20 @@ module.exports.expressApp = pages => {
               waitUntil: ['load', 'domcontentloaded']
             }
           )
+
           // Wait for web font loading completion
           // await page.evaluateHandle('document.fonts.ready')
           const pdfOption = getPdfOption(req.query.pdf_option)
+          
+          let headerTemplateOverride = await tryExtractHtmlAndRemove(page, extractHeaderSelector)
+          if (headerTemplateOverride) pdfOption.headerTemplate = headerTemplateOverride
+          
+          let footerTemplateOverride = await tryExtractHtmlAndRemove(page, extractFooterSelector)
+          if (footerTemplateOverride) pdfOption.footerTemplate = footerTemplateOverride
+
           // debug('pdfOption', pdfOption)
           const buff = await page.pdf(pdfOption)
+
           res.status(200)
           res.contentType('application/pdf')
           res.send(buff)
@@ -211,4 +223,22 @@ module.exports.expressApp = pages => {
     console.log('Listening on:', listenPort)
   })
   return appServer
+}
+
+
+async function tryExtractHtmlAndRemove(page, selector) {
+  let result = null
+  if (selector) {
+    try {
+      result = await page.$eval(selector, el => {
+        const html = el.outerHTML
+        el.remove()
+        return html
+      })
+    }
+    catch (e) {
+      // Do Nothing
+    }
+  }
+  return result
 }
