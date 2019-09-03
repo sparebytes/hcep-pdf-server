@@ -9,6 +9,7 @@
     "pageTimeoutMsec": "HCEP_PAGE_TIMEOUT_MSEC",
     "defaultMargin": "HCEP_DEFAULT_MARGIN",
     "defaultPdfOptionKey": "HCEP_DEFAULT_PDF_OPTION_KEY",
+    "errorOnInvalidPdfOptionKey": "HCEP_ERROR_ON_INVALID_PDF_OPTION_KEY",
     "defaultDisplayHeaderFooter": "HCEP_DEFAULT_DISPLAY_HEADER_FOOTER",
     "defaultExtractHeaderSelector": "HCEP_DEFAULT_EXTRACT_HEADER_SELECTOR",
     "defaultExtractFooterSelector": "HCEP_DEFAULT_EXTRACT_FOOTER_SELECTOR",

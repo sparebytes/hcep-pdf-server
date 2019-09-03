@@ -9,6 +9,7 @@
     "pageTimeoutMsec": 10000,
     "defaultMargin": "18mm",
     "defaultPdfOptionKey": "A4",
+    "errorOnInvalidPdfOptionKey": true,
     "defaultDisplayHeaderFooter": true,
     "defaultExtractHeaderSelector": ".hcep-print-header",
     "defaultExtractFooterSelector": ".hcep-print-footer",

@@ -31,7 +31,18 @@ module.exports.expressApp = (browserInstance) => {
   }))
   app.use(timeout(appTimeoutMsec))
 
-  function handlePageError(e, option) {
+  function handlePageError(res, e, option) {
+    try {
+      res.status(500)
+      res.contentType('text/plain')
+      if (e && typeof e.userMessage === 'string') {
+        res.send(e.userMessage)
+      }
+    }
+    catch (e2) {
+      // Do nothing
+    }
+    res.end()
     console.error('Page error occurred! process.exit()')
     console.error('error:', e)
     console.error('option:', option)
@@ -48,73 +59,73 @@ module.exports.expressApp = (browserInstance) => {
      */
     .get(async (req, res) => {
       const url = req.query.url
-      if (!url) {
-        res.status(400)
-        res.end('get parameter "url" is not set')
-        return
-      } else {
-        try {
-          const buff = await browserInstance.usePage(async page => {
-            await page.goto(
-              url, {
-                timeout: pageTimeoutMsec,
-                waitUntil: ['load', 'domcontentloaded']
+      try {
+        const pdfOption = getPdfOption(req.query.pdf_option)
+        if (!url) {
+          res.status(400)
+          res.end('get parameter "url" is not set')
+          return
+        } else {
+          try {
+            const buff = await browserInstance.usePage(async page => {
+              await page.goto(
+                url, {
+                  timeout: pageTimeoutMsec,
+                  waitUntil: ['load', 'domcontentloaded']
+                }
+              )
+
+              // Wait for element
+              if (req.query.wait_for_selector) {
+                void await page.waitFor(req.query.wait_for_selector)
               }
-            )
 
-            // Wait for element
-            if (req.query.wait_for_selector) {
-              void await page.waitFor(req.query.wait_for_selector)
-            }
+              // Wait for images
+              void await waitForImagesToLoad(page)
 
-            // Wait for images
-            void await waitForImagesToLoad(page)
-
-            // Wait for web font loading completion
-            // await page.evaluateHandle('document.fonts.ready')
-            const pdfOption = getPdfOption(req.query.pdf_option)
-            
-            if (pdfOption.displayHeaderFooter) {
-              // Extract Header
-              let headerTemplateOverride = await tryExtractHtmlAndRemove(page, extractHeaderSelector)
-              if (headerTemplateOverride) pdfOption.headerTemplate = headerTemplateOverride
+              // Wait for web font loading completion
+              // await page.evaluateHandle('document.fonts.ready')
               
-              // Extract Footer
-              let footerTemplateOverride = await tryExtractHtmlAndRemove(page, extractFooterSelector)
-              if (footerTemplateOverride) pdfOption.footerTemplate = footerTemplateOverride
+              if (pdfOption.displayHeaderFooter) {
+                // Extract Header
+                let headerTemplateOverride = await tryExtractHtmlAndRemove(page, extractHeaderSelector)
+                // eslint-disable-next-line require-atomic-updates
+                if (headerTemplateOverride) pdfOption.headerTemplate = headerTemplateOverride
+                
+                // Extract Footer
+                let footerTemplateOverride = await tryExtractHtmlAndRemove(page, extractFooterSelector)
+                // eslint-disable-next-line require-atomic-updates
+                if (footerTemplateOverride) pdfOption.footerTemplate = footerTemplateOverride
 
-              // Extract Style Tags
-              if (appConfig.defaultExtractStylesToHeaderFooter) {
-                let extractedStyleTags = await tryExtractHtmlOfMany(page, 'style')
-                const headerFooterPrefixHtml = extractedStyleTags.join('\n')
-                if (pdfOption.headerTemplate && headerFooterPrefixHtml) {
-                  pdfOption.headerTemplate = headerFooterPrefixHtml + pdfOption.headerTemplate
+                // Extract Style Tags
+                if (appConfig.defaultExtractStylesToHeaderFooter) {
+                  let extractedStyleTags = await tryExtractHtmlOfMany(page, 'style')
+                  const headerFooterPrefixHtml = extractedStyleTags.join('\n')
+                  if (pdfOption.headerTemplate && headerFooterPrefixHtml) {
+                    // eslint-disable-next-line require-atomic-updates
+                    pdfOption.headerTemplate = headerFooterPrefixHtml + pdfOption.headerTemplate
+                  }
                 }
               }
-            }
 
-            // debug('pdfOption', pdfOption)
-            return await page.pdf(pdfOption)
-          })
-          
-          res.status(200)
-          res.contentType('application/pdf')
-          res.send(buff)
-          res.end()
-          return
-          
-        } catch (e) {
-          try {
-            res.status(500)
-            res.contentType('text/plain')
+              // debug('pdfOption', pdfOption)
+              return await page.pdf(pdfOption)
+            })
+            
+            res.status(200)
+            res.contentType('application/pdf')
+            res.send(buff)
+            res.end()
+            return
+            
+          } catch (e) {
+            handlePageError(res, e, url)
+            return
           }
-          catch (e2) {
-            // Do nothing
-          }
-          res.end()
-          handlePageError(e, url)
-          return
         }
+      }
+      catch (e) {
+        handlePageError(res, e, url)
       }
     })
     /**
@@ -146,10 +157,7 @@ module.exports.expressApp = (browserInstance) => {
             return
           })
         } catch (e) {
-          res.status(500)
-          res.contentType('text/plain')
-          res.end()
-          handlePageError(e, 'html.length:' + html.length)
+          handlePageError(res, e, 'html.length:' + html.length)
           return
         }
       }

@@ -37,10 +37,19 @@ const getPdfOption = key => {
   if (!key) {
     debug('use defaultPdfOption:', defaultPdfOptionKey)
     key = defaultPdfOptionKey
-  } else if (!pdfOptionExists(key)) {
-    debug('key', key, 'is not exists in pdfOptionPresets')
-    key = defaultPdfOptionKey
   }
+  
+  if (!pdfOptionExists(key)) {
+    debug('key', key, 'is not exists in pdfOptionPresets')
+    if (appConfig.errorOnInvalidPdfOptionKey) {
+      const error = new Error('Invalid pdfOptionKey: ' + key)
+      error.userMessage = error.message
+      throw error
+    } else {
+      key = defaultPdfOptionKey
+    }
+  }
+  
   debug('use pdfOption', key)
   return new PdfOption(pdfOptionPresets[key])
 }
