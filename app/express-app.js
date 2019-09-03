@@ -13,8 +13,6 @@ module.exports.expressApp = (browserInstance) => {
   const listenPort = appConfig.port
   /* bytes or string for https://www.npmjs.com/package/bytes */
   const maxRquestSize = appConfig.maxRequestSize
-  const extractHeaderSelector = appConfig.defaultExtractHeaderSelector
-  const extractFooterSelector = appConfig.defaultExtractFooterSelector
 
   const app = express()
   const env = app.get('env')
@@ -61,6 +59,15 @@ module.exports.expressApp = (browserInstance) => {
       const url = req.query.url
       try {
         const pdfOption = getPdfOption(req.query.pdf_option)
+
+        pdfOption.displayHeaderFooter = (req.query.display_header_footer === 'true' || req.query.display_header_footer === '1') ? true : 
+          (req.query.display_header_footer === 'false' || req.query.display_header_footer === '0') ? false : appConfig.defaultDisplayHeaderFooter
+          
+        const extractHeaderSelector = req.query.extract_header_selector != null ? req.query.extract_header_selector : appConfig.defaultExtractHeaderSelector
+        const extractFooterSelector = req.query.extract_footer_selector != null ? req.query.extract_footer_selector : appConfig.defaultExtractFooterSelector         
+        const extractStylesToHeaderFooter = (req.query.extract_styles_to_header_footer === 'true' || req.query.extract_styles_to_header_footer === '1') ? true : 
+          (req.query.extract_styles_to_header_footer === 'false' || req.query.extract_styles_to_header_footer === '0') ? false : appConfig.defaultExtractStylesToHeaderFooter
+        
         if (!url) {
           res.status(400)
           res.end('get parameter "url" is not set')
@@ -98,7 +105,7 @@ module.exports.expressApp = (browserInstance) => {
                 if (footerTemplateOverride) pdfOption.footerTemplate = footerTemplateOverride
 
                 // Extract Style Tags
-                if (appConfig.defaultExtractStylesToHeaderFooter) {
+                if (extractStylesToHeaderFooter) {
                   let extractedStyleTags = await tryExtractHtmlOfMany(page, 'style')
                   const headerFooterPrefixHtml = extractedStyleTags.join('\n')
                   if (pdfOption.headerTemplate && headerFooterPrefixHtml) {
