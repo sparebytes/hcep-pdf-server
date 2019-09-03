@@ -73,6 +73,14 @@ module.exports.expressApp = pages => {
             }
           )
 
+          // Wait for element
+          if (req.query.wait_for_selector) {
+            void await page.waitFor(req.query.wait_for_selector)
+          }
+
+          // Wait for images
+          void await waitForImagesToLoad(page)
+
           // Wait for web font loading completion
           // await page.evaluateHandle('document.fonts.ready')
           const pdfOption = getPdfOption(req.query.pdf_option)
@@ -270,4 +278,17 @@ async function tryExtractHtmlOfMany(page, selector) {
     }
   }
   return result
+}
+
+async function waitForImagesToLoad(page) {
+  await page.evaluate(`async () => {
+    const selectors = Array.from(document.querySelectorAll('img'))
+    await Promise.all(selectors.map(img => {
+      if (img.complete) return
+      return new Promise((resolve, reject) => {
+        img.addEventListener('load', resolve)
+        img.addEventListener('error', reject)
+      })
+    }))
+  }`)
 }
