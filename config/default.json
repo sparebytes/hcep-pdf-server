@@ -10,6 +10,7 @@
     "defaultDisplayHeaderFooter": true,
     "defaultExtractHeaderSelector": ".hcep-print-header",
     "defaultExtractFooterSelector": ".hcep-print-footer",
+    "defaultExtractStylesToHeaderFooter": true,
     "maxRequestSize": "10MB",
     "testServerUrl": "http://localhost:8000",
     "testTargetUrl": "https://www.google.com",

@@ -77,11 +77,24 @@ module.exports.expressApp = pages => {
           // await page.evaluateHandle('document.fonts.ready')
           const pdfOption = getPdfOption(req.query.pdf_option)
           
-          let headerTemplateOverride = await tryExtractHtmlAndRemove(page, extractHeaderSelector)
-          if (headerTemplateOverride) pdfOption.headerTemplate = headerTemplateOverride
-          
-          let footerTemplateOverride = await tryExtractHtmlAndRemove(page, extractFooterSelector)
-          if (footerTemplateOverride) pdfOption.footerTemplate = footerTemplateOverride
+          if (pdfOption.displayHeaderFooter) {
+            // Extract Header
+            let headerTemplateOverride = await tryExtractHtmlAndRemove(page, extractHeaderSelector)
+            if (headerTemplateOverride) pdfOption.headerTemplate = headerTemplateOverride
+            
+            // Extract Footer
+            let footerTemplateOverride = await tryExtractHtmlAndRemove(page, extractFooterSelector)
+            if (footerTemplateOverride) pdfOption.footerTemplate = footerTemplateOverride
+
+            // Extract Style Tags
+            if (appConfig.defaultExtractStylesToHeaderFooter) {
+              let extractedStyleTags = await tryExtractHtmlOfMany(page, 'style')
+              const headerFooterPrefixHtml = extractedStyleTags.join('\n')
+              if (pdfOption.headerTemplate && headerFooterPrefixHtml) {
+                pdfOption.headerTemplate = headerFooterPrefixHtml + pdfOption.headerTemplate
+              }
+            }
+          }
 
           // debug('pdfOption', pdfOption)
           const buff = await page.pdf(pdfOption)
@@ -233,6 +246,22 @@ async function tryExtractHtmlAndRemove(page, selector) {
       result = await page.$eval(selector, el => {
         const html = el.outerHTML
         el.remove()
+        return html
+      })
+    }
+    catch (e) {
+      // Do Nothing
+    }
+  }
+  return result
+}
+
+async function tryExtractHtmlOfMany(page, selector) {
+  let result = []
+  if (selector) {
+    try {
+      result = await page.$$eval(selector, els => {
+        const html = els.map(el => el.outerHTML);
         return html
       })
     }
