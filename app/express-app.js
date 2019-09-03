@@ -43,7 +43,7 @@ module.exports.expressApp = pages => {
     console.error('Page error occurred! process.exit()')
     console.error('error:', e)
     console.error('option:', option)
-    process.exit()
+    // process.exit()
   }
 
   app.route('/')
@@ -80,8 +80,13 @@ module.exports.expressApp = pages => {
           res.end()
           return
         } catch (e) {
-          res.status(500)
-          res.contentType('text/plain')
+          try {
+            res.status(500)
+            res.contentType('text/plain')
+          }
+          catch (e2) {
+            // Do nothing
+          }
           res.end()
           handlePageError(e, url)
           return
