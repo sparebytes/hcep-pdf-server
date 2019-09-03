@@ -58,9 +58,9 @@ USER pptruser
 # Install fonts
 COPY fonts /usr/share/fonts
 
-# Test
-COPY test /hcep/test
-RUN npm test
+# # Test
+# COPY test /hcep/test
+# RUN npm test
 
 # If you want to extend pdf options, rename app/my-pdf-option-presets.js.sample to app/my-pdf-option-presets.js and activate this
 # ENV HCEP_MY_PDF_OPTION_PRESETS_FILE_PATH="./my-pdf-option-presets"
