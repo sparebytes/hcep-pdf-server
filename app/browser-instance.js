@@ -1,4 +1,4 @@
-const debug = require('debug')('hcepPdfServer:hcPages')
+const debug = require('debug')('hcepPdfServer:browserInstance')
 const { appConfig } = require('./app-config')
 const generateLaunchOptions = () => {
   const options = {
@@ -12,10 +12,8 @@ const generateLaunchOptions = () => {
   }
   return options
 }
-module.exports.hcPages = async (pagesNum) => {
-  if (!pagesNum) {
-    pagesNum = 1
-  }
+
+module.exports.getBrowserInstance = async () => {
   const puppeteer = require('puppeteer')
   const launchOptions = generateLaunchOptions()
   debug('launchOptions:', launchOptions)
@@ -23,18 +21,43 @@ module.exports.hcPages = async (pagesNum) => {
   const browser = await puppeteer.launch(launchOptions)
   const chromeVersion = await browser.version()
   debug('chromeVersion:', chromeVersion)
-  const pages = []
   browser.on('error', msg => {
-    console.log("BROWSER ERROR", msg)
+    console.log('BROWSER ERROR', msg)
     throw msg
   })
-  for(let i=0; i < pagesNum; i++){
-    debug('page launched No.' + i)
-    const page = await browser.newPage()
+
+  const usePage = async (callback) => {
+    let page
+    let context = null
+    if (appConfig.useIncognitoBrowserContext) {
+      context = await browser.createIncognitoBrowserContext()
+      page = await context.newPage()
+    }
+    else {
+      page = await browser.newPage()
+    }
     page.on('error', msg => {
       throw msg
     })
-    pages.push(page)
+  
+    try {
+      const result = await callback(page)
+      return result
+    }
+    finally {
+      if (context) {
+        context.close()
+      }
+      else {
+        page.close()
+      }
+    }
   }
-  return pages
+  
+
+  return {
+    puppeteer,
+    browser,
+    usePage,
+  }
 }

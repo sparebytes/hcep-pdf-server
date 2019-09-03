@@ -1,4 +1,3 @@
-const { hcPages } = require('./hc-pages')
 const { expressApp } = require('./express-app')
 const { appConfig } = require('./app-config')
 const LAUNCH_HC_PAGES_NUM = appConfig.launchHcPagesNum
@@ -9,7 +8,8 @@ process.on('unhandledRejection', function(e){
 })
 
 const main = async () => {
-  const browserPages = await hcPages(LAUNCH_HC_PAGES_NUM)
-  expressApp(browserPages)
+  const { getBrowserInstance } = require('./browser-instance')
+  const browserInstance = await getBrowserInstance()
+  expressApp(browserInstance)
 }
 main()

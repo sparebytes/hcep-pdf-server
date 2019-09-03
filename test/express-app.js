@@ -1,7 +1,6 @@
 const request = require('supertest')
-const { hcPages } = require('../app/hc-pages')
 const { expressApp } = require('../app/express-app')
-const { appConfig } = require('./app-config')
+const { appConfig } = require('../app/app-config')
 const SERVER_URL = appConfig.testServerUrl
 const TAREGT_URL = appConfig.testTargetUrl
 const LAUNCH_HC_PAGES_NUM = appConfig.launchHcPagesNum
@@ -23,8 +22,9 @@ describe('requests routes', function ()  {
   let app
   before(beforeDone => {
     (async() => {
-      const browserPages = await hcPages(LAUNCH_HC_PAGES_NUM)
-      app = await expressApp(browserPages)
+      const { getBrowserInstance } = require('../app/browser-instance')
+      const browserInstance = getBrowserInstance()
+      app = await expressApp(browserInstance)
       beforeDone()
     })()
   })

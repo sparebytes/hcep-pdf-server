@@ -2,6 +2,7 @@
     "port": 8000,
     "chromeBinary": "/usr/bin/google-chrome",
     "useChromium": false,
+    "useIncognitoBrowserContext": false,
     "launchHcPagesNum": 8,
     "appTimeoutMsec": 10000,
     "pageTimeoutMsec": 10000,

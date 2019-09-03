@@ -1,20 +1,7 @@
 const { appConfig } = require('./app-config')
 
-const extractHeaderSelector = appConfig.defaultExtractHeaderSelector
-const extractFooterSelector = appConfig.defaultExtractFooterSelector
 
-module.exports.expressApp = pages => {
-  const pagesNum = pages.length
-  console.log(`pages.length: ${pages.length}`)
-  let currentPageNo = 0
-  const getSinglePage = () => {
-    currentPageNo++;
-    if (currentPageNo >= pagesNum) {
-      currentPageNo = 0
-    }
-    debug(`pagesNum:${pagesNum} currentPageNo:${currentPageNo}`)
-    return pages[currentPageNo]
-  }
+module.exports.expressApp = (browserInstance) => {
   const bodyParser = require('body-parser')
   const debug = require('debug')('hcepPdfServer:expressApp')
   const express = require('express')
@@ -26,6 +13,8 @@ module.exports.expressApp = pages => {
   const listenPort = appConfig.port
   /* bytes or string for https://www.npmjs.com/package/bytes */
   const maxRquestSize = appConfig.maxRequestSize
+  const extractHeaderSelector = appConfig.defaultExtractHeaderSelector
+  const extractFooterSelector = appConfig.defaultExtractFooterSelector
 
   const app = express()
   const env = app.get('env')
@@ -64,54 +53,56 @@ module.exports.expressApp = pages => {
         res.end('get parameter "url" is not set')
         return
       } else {
-        const page = getSinglePage()
         try {
-          await page.goto(
-            url, {
-              timeout: pageTimeoutMsec,
-              waitUntil: ['load', 'domcontentloaded']
+          const buff = await browserInstance.usePage(async page => {
+            await page.goto(
+              url, {
+                timeout: pageTimeoutMsec,
+                waitUntil: ['load', 'domcontentloaded']
+              }
+            )
+
+            // Wait for element
+            if (req.query.wait_for_selector) {
+              void await page.waitFor(req.query.wait_for_selector)
             }
-          )
 
-          // Wait for element
-          if (req.query.wait_for_selector) {
-            void await page.waitFor(req.query.wait_for_selector)
-          }
+            // Wait for images
+            void await waitForImagesToLoad(page)
 
-          // Wait for images
-          void await waitForImagesToLoad(page)
-
-          // Wait for web font loading completion
-          // await page.evaluateHandle('document.fonts.ready')
-          const pdfOption = getPdfOption(req.query.pdf_option)
-          
-          if (pdfOption.displayHeaderFooter) {
-            // Extract Header
-            let headerTemplateOverride = await tryExtractHtmlAndRemove(page, extractHeaderSelector)
-            if (headerTemplateOverride) pdfOption.headerTemplate = headerTemplateOverride
+            // Wait for web font loading completion
+            // await page.evaluateHandle('document.fonts.ready')
+            const pdfOption = getPdfOption(req.query.pdf_option)
             
-            // Extract Footer
-            let footerTemplateOverride = await tryExtractHtmlAndRemove(page, extractFooterSelector)
-            if (footerTemplateOverride) pdfOption.footerTemplate = footerTemplateOverride
+            if (pdfOption.displayHeaderFooter) {
+              // Extract Header
+              let headerTemplateOverride = await tryExtractHtmlAndRemove(page, extractHeaderSelector)
+              if (headerTemplateOverride) pdfOption.headerTemplate = headerTemplateOverride
+              
+              // Extract Footer
+              let footerTemplateOverride = await tryExtractHtmlAndRemove(page, extractFooterSelector)
+              if (footerTemplateOverride) pdfOption.footerTemplate = footerTemplateOverride
 
-            // Extract Style Tags
-            if (appConfig.defaultExtractStylesToHeaderFooter) {
-              let extractedStyleTags = await tryExtractHtmlOfMany(page, 'style')
-              const headerFooterPrefixHtml = extractedStyleTags.join('\n')
-              if (pdfOption.headerTemplate && headerFooterPrefixHtml) {
-                pdfOption.headerTemplate = headerFooterPrefixHtml + pdfOption.headerTemplate
+              // Extract Style Tags
+              if (appConfig.defaultExtractStylesToHeaderFooter) {
+                let extractedStyleTags = await tryExtractHtmlOfMany(page, 'style')
+                const headerFooterPrefixHtml = extractedStyleTags.join('\n')
+                if (pdfOption.headerTemplate && headerFooterPrefixHtml) {
+                  pdfOption.headerTemplate = headerFooterPrefixHtml + pdfOption.headerTemplate
+                }
               }
             }
-          }
 
-          // debug('pdfOption', pdfOption)
-          const buff = await page.pdf(pdfOption)
-
+            // debug('pdfOption', pdfOption)
+            return await page.pdf(pdfOption)
+          })
+          
           res.status(200)
           res.contentType('application/pdf')
           res.send(buff)
           res.end()
           return
+          
         } catch (e) {
           try {
             res.status(500)
@@ -140,19 +131,20 @@ module.exports.expressApp = pages => {
         res.contentType('text/plain')
         res.end('post parameter "html" is not set')
       } else {
-        const page = getSinglePage()
         try {
-          await page.setContent(html)
-          // Wait for web font loading completion
-          // await page.evaluateHandle('document.fonts.ready')
-          const pdfOption = getPdfOption(req.body.pdf_option)
-          // debug('pdfOption', pdfOption)
-          const buff = await page.pdf(pdfOption)
-          res.status(200)
-          res.contentType('application/pdf')
-          res.send(buff)
-          res.end()
-          return
+          await browserInstance.usePage(async page => {
+            await page.setContent(html)
+            // Wait for web font loading completion
+            // await page.evaluateHandle('document.fonts.ready')
+            const pdfOption = getPdfOption(req.body.pdf_option)
+            // debug('pdfOption', pdfOption)
+            const buff = await page.pdf(pdfOption)
+            res.status(200)
+            res.contentType('application/pdf')
+            res.send(buff)
+            res.end()
+            return
+          })
         } catch (e) {
           res.status(500)
           res.contentType('text/plain')
@@ -177,21 +169,22 @@ module.exports.expressApp = pages => {
         res.contentType('text/plain')
         res.end('get parameter "url" is not set')
       } else {
-        const page = getSinglePage()
         try {
-          await page.goto(
-            url, {
-              timeout: pageTimeoutMsec,
-              waitUntil: ['load', 'domcontentloaded']
-            }
-          )
-          const buff = await page.screenshot({
-            fullPage: true
+          await browserInstance.usePage(async page => {
+            await page.goto(
+              url, {
+                timeout: pageTimeoutMsec,
+                waitUntil: ['load', 'domcontentloaded']
+              }
+            )
+            const buff = await page.screenshot({
+              fullPage: true
+            })
+            res.status(200)
+            res.contentType('image/png')
+            res.send(buff)
+            res.end()
           })
-          res.status(200)
-          res.contentType('image/png')
-          res.send(buff)
-          res.end()
         } catch (e) {
           console.error(e)
           res.status(500)
@@ -213,16 +206,17 @@ module.exports.expressApp = pages => {
         res.end('post parameter "html" is not set')
         return
       } else {
-        const page = getSinglePage()
         try {
-          await page.setContent(html)
-          const buff = await page.screenshot({
-            fullPage: true
+          await browserInstance.usePage(async page => {
+            await page.setContent(html)
+            const buff = await page.screenshot({
+              fullPage: true
+            })
+            res.status(200)
+            res.contentType('image/png')
+            res.send(buff)
+            res.end()
           })
-          res.status(200)
-          res.contentType('image/png')
-          res.send(buff)
-          res.end()
         } catch (e) {
           console.error(e)
           res.status(500)

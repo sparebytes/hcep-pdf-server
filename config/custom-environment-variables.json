@@ -2,6 +2,7 @@
     "port": "HCEP_PORT",
     "chromeBinary": "HCEP_CHROME_BINARY",
     "useChromium": "HCEP_USE_CHROMIUM",
+    "useIncognitoBrowserContext": "HCEP_USE_INCOGNITO_BROWSER_CONTEXT",
     "launchHcPagesNum": "LAUNCH_HC_PAGES_NUM",
     "appTimeoutMsec": "HCEP_APP_TIMEOUT_MSEC",
     "pageTimeoutMsec": "HCEP_PAGE_TIMEOUT_MSEC",
