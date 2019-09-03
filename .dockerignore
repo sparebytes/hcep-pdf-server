@@ -1,3 +1,7 @@
 node_modules
 .devcontainer
 .vscode
+
+# Local Config
+/config/local.*
+/config/local-*
