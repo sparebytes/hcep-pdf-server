@@ -1,6 +1,5 @@
 const { appConfig } = require('./app-config')
 
-
 module.exports.expressApp = (browserInstance) => {
   const bodyParser = require('body-parser')
   const debug = require('debug')('hcepPdfServer:expressApp')
@@ -28,6 +27,30 @@ module.exports.expressApp = (browserInstance) => {
     limit: maxRquestSize
   }))
   app.use(timeout(appTimeoutMsec))
+
+  // Authentication
+  if (appConfig.security.jwt.secret) {
+    const jwt = require('express-jwt')
+    app.use(
+      jwt({
+        secret: appConfig.security.jwt.secret,
+        getToken: function fromHeaderOrQuerystring (req) {
+          if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+            return req.headers.authorization.split(' ')[1]
+          } else if (req.query && req.query.authorizationToken) {
+            return req.query.authorizationToken
+          }
+          return null
+        },
+      }),
+      function(req, res, next) {
+        if (!req.user) return res.sendStatus(401)
+        next()
+      })
+  }
+  else if (appConfig.security.jwt.required) {
+    throw new Error('HCEP_SECURITY_JWT_SECRET is blank which means authentication is disabled. If this is intended please set HCEP_SECURITY_JWT_REQUIRED=true')
+  }
 
   function handlePageError(res, e, option) {
     try {

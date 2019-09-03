@@ -1,5 +1,11 @@
 {
     "port": "HCEP_PORT",
+    "security": {
+        "jwt": {
+            "required": "HCEP_SECURITY_JWT_REQUIRED",
+            "security": "HCEP_SECURITY_JWT_SECRET"
+        }
+    },
     "chromeBinary": "HCEP_CHROME_BINARY",
     "useChromium": "HCEP_USE_CHROMIUM",
     "useIncognitoBrowserContext": "HCEP_USE_INCOGNITO_BROWSER_CONTEXT",

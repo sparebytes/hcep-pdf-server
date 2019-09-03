@@ -2,6 +2,8 @@ const config = require('config')
 
 const envMapping =  {
   port: 'HCEP_PORT',
+  'security.jwt.required': 'HCEP_SECURITY_JWT_REQUIRED',
+  'security.jwt.secret': 'HCEP_SECURITY_JWT_SECRET',
   chromeBinary: 'HCEP_CHROME_BINARY',
   useChromium: 'HCEP_USE_CHROMIUM',
   useIncognitoBrowserContext: 'HCEP_USE_INCOGNITO_BROWSER_CONTEXT',
@@ -25,6 +27,12 @@ const envMapping =  {
 
 const appConfig = {
   port: configGetType('port', 'integer', false),
+  security: {
+    jwt: {
+      required: configGetType('security.jwt.required', 'boolean', false),
+      secret: configGetType('security.jwt.secret', 'string', true),
+    }
+  },
   chromeBinary: configGetType('chromeBinary', 'string', false),
   useChromium: configGetType('useChromium', 'boolean', false),
   useIncognitoBrowserContext: configGetType('useIncognitoBrowserContext', 'boolean', false),

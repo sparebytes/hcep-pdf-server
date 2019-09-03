@@ -1,5 +1,10 @@
 {
     "port": 8000,
+    "security": {
+        "jwt": {
+            "required": true
+        }
+    },
     "chromeBinary": "/usr/bin/google-chrome",
     "useChromium": false,
     "useIncognitoBrowserContext": false,

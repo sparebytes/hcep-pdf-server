@@ -1,6 +1,14 @@
 {
-    "useIncognitoBrowserContext": true,
-    "closePageAfterUse": true,
+    "security": {
+        "jwt": {
+            "required": true,
+            "secret": "mySecret"
+        }
+    },
+    "useIncognitoBrowserContext": false,
+    "closePageAfterUse": false,
+    "appTimeoutMsec": 10000,
+    "pageTimeoutMsec": 10000,
     "pdfOptionPresets": {
         "A4ShowPageNumberFooter": {
             "format": "A4",
