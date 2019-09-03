@@ -8,7 +8,8 @@
     "defaultMargin": "18mm",
     "defaultPdfOptionKey": "A4",
     "maxRequestSize": "10MB",
-    "myPdfOptionPresetsFilePath": null,
     "testServerUrl": "http://localhost:8000",
-    "testTargetUrl": "https://www.google.com"
+    "testTargetUrl": "https://www.google.com",
+    "myPdfOptionPresetsFilePath": null,
+    "pdfOptionPresets": null
 }

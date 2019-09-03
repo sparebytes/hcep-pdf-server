@@ -10,9 +10,10 @@ const envMapping =  {
   defaultMargin: 'HCEP_DEFAULT_MARGIN',
   defaultPdfOptionKey: 'HCEP_DEFAULT_PDF_OPTION_KEY',
   maxRequestSize: 'HCEP_MAX_REQUEST_SIZE',
-  myPdfOptionPresetsFilePath: 'HCEP_MY_PDF_OPTION_PRESETS_FILE_PATH',
   testServerUrl: 'HCEP_TEST_SERVER_URL',
   testTargetUrl: 'HCEP_TEST_TAREGT_URL',
+  myPdfOptionPresetsFilePath: 'HCEP_MY_PDF_OPTION_PRESETS_FILE_PATH',
+  pdfOptionPresets: 'HCEP_MY_PDF_OPTION_PRESETS',
 }
 
 const appConfig = {
@@ -25,9 +26,10 @@ const appConfig = {
   defaultMargin: configGetType('defaultMargin', 'string', false),
   defaultPdfOptionKey: configGetType('defaultPdfOptionKey', 'string', false),
   maxRequestSize: configGetType('maxRequestSize', 'string', false),
-  myPdfOptionPresetsFilePath: configGetType('myPdfOptionPresetsFilePath', 'string', true),
   testServerUrl: configGetType('testServerUrl', 'string', false),
   testTargetUrl: configGetType('testTargetUrl', 'string', false),
+  myPdfOptionPresetsFilePath: configGetType('myPdfOptionPresetsFilePath', 'string', true),
+  pdfOptionPresets: configGetType('pdfOptionPresets', 'json', true),
 }
 
 module.exports = exports = {
@@ -83,6 +85,17 @@ function configGetType(key, type, nullable) {
 
     if (typeof value !== 'boolean') {
       throw new Error(`Expected ${envKey} to be of type ${type}`)
+    }
+    break
+
+  case 'json':
+    if (typeof value === 'string') {
+      try {
+        value = JSON.parse(value)
+      }
+      catch (ex) {
+        throw new Error(`Unable to parse JSON from ${envKey}`)
+      }
     }
     break
   }

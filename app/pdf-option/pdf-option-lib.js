@@ -6,6 +6,13 @@ const { PdfOption } = require('./pdf-option')
 const myPdfOptionPresetsFilePath = appConfig.defaultPdfOptionPresets
 
 let pdfOptionPresets = defaultPdfOptionPresets
+
+if (appConfig.pdfOptionPresets) {
+  const mergeOptions = require('merge-options')
+  pdfOptionPresets = mergeOptions(defaultPdfOptionPresets, appConfig.pdfOptionPresets)
+  debug('config pdfOptionPresets merged:', pdfOptionPresets)
+}
+
 const loadMyPdfOptionPresets = () => {
   if (!myPdfOptionPresetsFilePath) {
     return null

@@ -8,7 +8,11 @@
     "defaultMargin": "HCEP_DEFAULT_MARGIN",
     "defaultPdfOptionKey": "HCEP_DEFAULT_PDF_OPTION_KEY",
     "maxRequestSize": "HCEP_MAX_REQUEST_SIZE",
-    "myPdfOptionPresetsFilePath": "HCEP_MY_PDF_OPTION_PRESETS_FILE_PATH",
     "testServerUrl": "HCEP_TEST_SERVER_URL",
-    "testTargetUrl": "HCEP_TEST_TAREGT_URL"
+    "testTargetUrl": "HCEP_TEST_TAREGT_URL",
+    "myPdfOptionPresetsFilePath": "HCEP_MY_PDF_OPTION_PRESETS_FILE_PATH",
+    "pdfOptionPresets": {
+        "__name": "HCEP_MY_PDF_OPTION_PRESETS",
+        "__format": "json"
+    }
 }
