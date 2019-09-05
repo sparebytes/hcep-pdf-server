@@ -137,6 +137,9 @@ module.exports.expressApp = (browserInstance) => {
                   }
                 }
               }
+            
+              // Blur the activeElement to prevent cursor in text box
+              void await blurActiveElement(page);
 
               // debug('pdfOption', pdfOption)
               return await page.pdf(pdfOption)
@@ -323,4 +326,13 @@ async function waitForImagesToLoad(page) {
       })
     }))
   })
+}
+
+async function blurActiveElement(page) {
+  await page.evaluate(() => {
+    const focusedEl = document.activeElement;
+    if (focusedEl) {
+      focusedEl.blur();
+    }
+  });
 }
