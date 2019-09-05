@@ -6,6 +6,7 @@
         }
     },
     "chromeBinary": "/usr/bin/google-chrome",
+    "chromeBinaryWindows": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
     "useChromium": false,
     "useIncognitoBrowserContext": false,
     "closePageAfterUse": false,

@@ -1,3 +1,4 @@
+const os = require('os')
 const config = require('config')
 
 const envMapping =  {
@@ -5,6 +6,7 @@ const envMapping =  {
   'security.jwt.required': 'HCEP_SECURITY_JWT_REQUIRED',
   'security.jwt.secret': 'HCEP_SECURITY_JWT_SECRET',
   chromeBinary: 'HCEP_CHROME_BINARY',
+  chromeBinaryWindows: 'HCEP_CHROME_BINARY',
   useChromium: 'HCEP_USE_CHROMIUM',
   useIncognitoBrowserContext: 'HCEP_USE_INCOGNITO_BROWSER_CONTEXT',
   closePageAfterUse: 'HCEP_CLOSE_PAGE_AFTER_USE',
@@ -33,7 +35,7 @@ const appConfig = {
       secret: configGetType('security.jwt.secret', 'string', true),
     }
   },
-  chromeBinary: configGetType('chromeBinary', 'string', false),
+  chromeBinary: /^win/.test(os.platform()) ? configGetType('chromeBinaryWindows', 'string', false) : configGetType('chromeBinary', 'string', false),
   useChromium: configGetType('useChromium', 'boolean', false),
   useIncognitoBrowserContext: configGetType('useIncognitoBrowserContext', 'boolean', false),
   closePageAfterUse: configGetType('closePageAfterUse', 'boolean', false),
